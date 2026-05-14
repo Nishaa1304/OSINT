@@ -10,6 +10,7 @@ import AnimatedCounter from '../components/ui/AnimatedCounter'
 import api from '../api/client'
 import { formatDate } from '../utils/riskScorer'
 import { useAuthStore } from '../store/authStore'
+import { useThemeStore } from '../store/themeStore'
 
 const THREAT_COLORS = { SAFE:'#00ff88', LOW:'#00d4ff', MEDIUM:'#ffd60a', HIGH:'#ff6b35', CRITICAL:'#ff3366' }
 const TYPE_COLORS = ['#00d4ff','#7c3aed','#00ff88','#ffd60a','#ff6b35']
@@ -28,8 +29,6 @@ const DEMO_STATS = { total_searches:247, critical_threats:12, high_threats:34, p
 const DEMO_PIE = [{ name:'SAFE',value:45 },{ name:'LOW',value:30 },{ name:'MEDIUM',value:15 },{ name:'HIGH',value:7 },{ name:'CRITICAL',value:3 }]
 const DEMO_BAR = [{ name:'URL',count:98 },{ name:'IP',count:76 },{ name:'EMAIL',count:43 },{ name:'DOMAIN',count:30 }]
 
-const TT = { contentStyle:{ background:'#0d1526', border:'1px solid rgba(0,212,255,0.3)', borderRadius:'8px', color:'#e2e8f0', fontSize:'12px' } }
-
 export default function Dashboard() {
   const [stats, setStats] = useState(null)
   const [activity, setActivity] = useState([])
@@ -37,7 +36,23 @@ export default function Dashboard() {
   const [typeBar, setTypeBar] = useState(DEMO_BAR)
   const [loading, setLoading] = useState(true)
   const { user } = useAuthStore()
+  const { theme } = useThemeStore()
   const navigate = useNavigate()
+
+  const isLight = theme === 'light'
+  const TT = {
+    contentStyle: {
+      background: isLight ? '#ffffff' : '#0d1526',
+      border: `1px solid ${isLight ? '#cbd5e1' : 'rgba(0,212,255,0.3)'}`,
+      borderRadius: '8px',
+      color: isLight ? '#0f172a' : '#e2e8f0',
+      fontSize: '12px',
+    },
+    labelStyle: { color: isLight ? '#0f172a' : '#e2e8f0' },
+    itemStyle:  { color: isLight ? '#334155' : '#e2e8f0' },
+  }
+  const axisColor = isLight ? '#64748b' : '#64748b'
+  const gridColor = isLight ? 'rgba(100,116,139,0.2)' : 'rgba(30,45,74,0.5)'
 
   useEffect(() => {
     Promise.all([
@@ -99,9 +114,9 @@ export default function Dashboard() {
                   </linearGradient>
                 ))}
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(30,45,74,0.5)"/>
-              <XAxis dataKey="date" tick={{ fill:'#64748b', fontSize:11 }} axisLine={false} tickLine={false}/>
-              <YAxis tick={{ fill:'#64748b', fontSize:11 }} axisLine={false} tickLine={false}/>
+              <CartesianGrid strokeDasharray="3 3" stroke={gridColor}/>
+              <XAxis dataKey="date" tick={{ fill: axisColor, fontSize:11 }} axisLine={false} tickLine={false}/>
+              <YAxis tick={{ fill: axisColor, fontSize:11 }} axisLine={false} tickLine={false}/>
               <Tooltip {...TT}/>
               {['CRITICAL','HIGH','MEDIUM','LOW','SAFE'].map(l => (
                 <Area key={l} type="monotone" dataKey={l} stroke={THREAT_COLORS[l]} fill={`url(#g-${l})`} strokeWidth={2} dot={false}/>
@@ -141,9 +156,9 @@ export default function Dashboard() {
           </h3>
           <ResponsiveContainer width="100%" height={170}>
             <BarChart data={typeBar} barSize={36}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(30,45,74,0.5)" vertical={false}/>
-              <XAxis dataKey="name" tick={{ fill:'#64748b', fontSize:11 }} axisLine={false} tickLine={false}/>
-              <YAxis tick={{ fill:'#64748b', fontSize:11 }} axisLine={false} tickLine={false}/>
+              <CartesianGrid strokeDasharray="3 3" stroke={gridColor} vertical={false}/>
+              <XAxis dataKey="name" tick={{ fill: axisColor, fontSize:11 }} axisLine={false} tickLine={false}/>
+              <YAxis tick={{ fill: axisColor, fontSize:11 }} axisLine={false} tickLine={false}/>
               <Tooltip {...TT}/>
               <Bar dataKey="count" radius={[4,4,0,0]}>
                 {typeBar.map((_,i) => <Cell key={i} fill={TYPE_COLORS[i%TYPE_COLORS.length]}/>)}

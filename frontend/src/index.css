@@ -25,6 +25,66 @@
   --muted: #64748b;
 }
 
+.light {
+  --bg-primary: #f0f4f8;
+  --bg-surface: #ffffff;
+  --bg-card: #ffffff;
+  --border: #cbd5e1;
+  --text: #0f172a;
+  --muted: #475569;
+}
+
+.light body {
+  background-color: #f0f4f8;
+  color: #0f172a;
+}
+
+/* Force all text dark in light mode */
+.light * { color: inherit; }
+.light body, .light div, .light main, .light section,
+.light h1, .light h2, .light h3, .light h4, .light h5, .light h6,
+.light p, .light span, .light td, .light th, .light label,
+.light li, .light a { color: #0f172a; }
+
+.light .text-cyber-muted { color: #475569 !important; }
+.light .text-cyber-cyan  { color: #0066ff !important; }
+.light .text-cyber-red   { color: #dc2626 !important; }
+
+.light .glass-card, .light .glass-card-light {
+  background: rgba(255,255,255,0.95) !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08) !important;
+}
+
+.light .cyber-input {
+  background: #f8fafc !important;
+  border: 1px solid #cbd5e1 !important;
+  color: #0f172a !important;
+}
+.light .cyber-input::placeholder { color: #94a3b8 !important; }
+
+.light .grid-bg {
+  background-color: #f0f4f8 !important;
+  background-image:
+    linear-gradient(rgba(0,102,255,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,102,255,0.05) 1px, transparent 1px) !important;
+}
+
+.light header {
+  background: #ffffff !important;
+  border-color: #e2e8f0 !important;
+}
+.light aside {
+  background: #ffffff !important;
+  border-color: #e2e8f0 !important;
+}
+
+.light .bg-cyber-bg      { background-color: #f0f4f8 !important; }
+.light .bg-cyber-surface { background-color: #ffffff !important; }
+.light .bg-cyber-card    { background-color: #ffffff !important; }
+.light .border-cyber-border { border-color: #e2e8f0 !important; }
+.light .hover\:bg-white\/5:hover { background-color: rgba(0,0,0,0.05) !important; }
+
 html, body, #root {
   height: 100%;
   min-height: 100vh;
@@ -171,6 +231,20 @@ body {
   border: 1px solid rgba(0, 212, 255, 0.3) !important;
   border-radius: 8px !important;
   color: #e2e8f0 !important;
+}
+
+.light .recharts-tooltip-wrapper .recharts-default-tooltip {
+  background: #ffffff !important;
+  border: 1px solid #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+/* Toasts in light mode */
+.light .react-hot-toast__toast {
+  background: #ffffff !important;
+  color: #0f172a !important;
+  border: 1px solid #cbd5e1 !important;
+  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.08) !important;
 }
 
 /* Sidebar transition */

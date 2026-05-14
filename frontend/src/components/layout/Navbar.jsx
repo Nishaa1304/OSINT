@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { Menu, Bell, Search, User, ChevronDown, LogOut, Settings } from 'lucide-react'
+import { Menu, Bell, Search, User, ChevronDown, LogOut, Settings, Sun, Moon } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useAuthStore } from '../../store/authStore'
+import { useThemeStore } from '../../store/themeStore'
 import api from '../../api/client'
 import toast from 'react-hot-toast'
 
@@ -19,6 +20,7 @@ const PAGE_TITLES = {
 
 export default function Navbar({ onToggleSidebar, onMobileMenu }) {
   const { user, logout } = useAuthStore()
+  const { theme, toggleTheme } = useThemeStore()
   const navigate = useNavigate()
   const location = useLocation()
   const [profileOpen, setProfileOpen] = useState(false)
@@ -78,6 +80,15 @@ export default function Navbar({ onToggleSidebar, onMobileMenu }) {
           <Search size={13} />
           <span>Quick search...</span>
           <kbd className="ml-1 text-[10px] px-1 bg-cyber-border rounded">⌘K</kbd>
+        </button>
+
+        {/* Theme toggle */}
+        <button
+          onClick={toggleTheme}
+          className="p-2 text-cyber-muted hover:text-cyber-cyan transition-colors rounded-lg hover:bg-white/5"
+          title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+        >
+          {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
         </button>
 
         {/* Alerts bell */}
