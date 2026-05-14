@@ -7,16 +7,14 @@ import { SkeletonTable } from '../components/ui/LoadingSkeleton'
 import api from '../api/client'
 import { formatDate, truncate } from '../utils/riskScorer'
 import { TYPE_ICONS, TYPE_LABELS } from '../utils/inputDetector'
+import { useHistoryStore } from '../store/historyStore'
 import toast from 'react-hot-toast'
 
 const QUERY_TYPES = ['all','url','ip','email','domain']
 const THREAT_LEVELS = ['all','SAFE','LOW','MEDIUM','HIGH','CRITICAL']
 
 export default function History() {
-  const [items, setItems] = useState([])
-  const [total, setTotal] = useState(0)
-  const [page, setPage] = useState(1)
-  const [pages, setPages] = useState(1)
+  const { items, total, page, pages, setHistory, setPage, removeItem, toggleBookmark } = useHistoryStore()
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [typeFilter, setTypeFilter] = useState('all')
@@ -30,9 +28,7 @@ export default function History() {
       if (levelFilter !== 'all') params.set('threat_level', levelFilter)
       if (search) params.set('search', search)
       const { data } = await api.get(`/history/?${params}`)
-      setItems(data.items || [])
-      setTotal(data.total || 0)
-      setPages(data.pages || 1)
+      setHistory({ items: data.items || [], total: data.total || 0, pages: data.pages || 1 })
     } catch { toast.error('Could not load history') }
     finally { setLoading(false) }
   }, [page, typeFilter, levelFilter, search])
@@ -40,14 +36,14 @@ export default function History() {
   useEffect(() => { fetchHistory() }, [fetchHistory])
 
   const handleDelete = async (id) => {
-    try { await api.delete(`/history/${id}`); setItems(p => p.filter(i => i.id !== id)); toast.success('Deleted') }
+    try { await api.delete(`/history/${id}`); removeItem(id); toast.success('Deleted') }
     catch { toast.error('Delete failed') }
   }
 
   const handleBookmark = async (id) => {
     try {
       const { data } = await api.post(`/history/${id}/bookmark`)
-      setItems(p => p.map(i => i.id === id ? { ...i, is_bookmarked: data.is_bookmarked } : i))
+      toggleBookmark(id, data.is_bookmarked)
       toast.success(data.is_bookmarked ? 'Bookmarked!' : 'Removed')
     } catch { toast.error('Failed') }
   }
@@ -126,8 +122,8 @@ export default function History() {
                 <div className="flex items-center justify-between p-4 border-t border-cyber-border">
                   <p className="text-xs text-cyber-muted">Page {page} of {pages}</p>
                   <div className="flex gap-2">
-                    <button disabled={page<=1} onClick={() => setPage(p=>p-1)} className="px-3 py-1.5 text-xs rounded-lg border border-cyber-border text-cyber-muted hover:text-cyber-cyan disabled:opacity-40 transition-all">Prev</button>
-                    <button disabled={page>=pages} onClick={() => setPage(p=>p+1)} className="px-3 py-1.5 text-xs rounded-lg border border-cyber-border text-cyber-muted hover:text-cyber-cyan disabled:opacity-40 transition-all">Next</button>
+            <button disabled={page<=1} onClick={() => setPage(page-1)} className="px-3 py-1.5 text-xs rounded-lg border border-cyber-border text-cyber-muted hover:text-cyber-cyan disabled:opacity-40 transition-all">Prev</button>
+                    <button disabled={page>=pages} onClick={() => setPage(page+1)} className="px-3 py-1.5 text-xs rounded-lg border border-cyber-border text-cyber-muted hover:text-cyber-cyan disabled:opacity-40 transition-all">Next</button>
                   </div>
                 </div>
               )}

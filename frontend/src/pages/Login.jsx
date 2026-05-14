@@ -22,12 +22,7 @@ export default function Login() {
       toast.success(`Welcome back, ${data.user.username}!`)
       navigate('/dashboard')
     } catch (err) {
-      // Mock login fallback when backend is offline
-      const username = form.email.split('@')[0]
-      const mockUser = { id: '1', email: form.email, username, full_name: username, role: 'intern', is_active: true, created_at: new Date().toISOString() }
-      login(mockUser, 'mock-token', 'mock-refresh')
-      toast.success(`Welcome back, ${username}!`)
-      navigate('/dashboard')
+      toast.error(err.response?.data?.detail || 'Login failed. Check your credentials.')
     } finally {
       setLoading(false)
     }

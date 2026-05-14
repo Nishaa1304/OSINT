@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<html>
+<head><title>OSINT - Clear Session</title></head>
+<body>
+<script>
+  localStorage.removeItem('osint-auth');
+  document.body.innerHTML = '<h2 style="font-family:sans-serif;color:green">✅ Session cleared! <a href="http://localhost:5173/login">Click here to login</a></h2>';
+</script>
+</body>
+</html>

@@ -126,3 +126,34 @@ async def get_me(current_user: dict = Depends(get_current_user)):
         created_at=current_user["created_at"],
         last_login=current_user.get("last_login"),
     )
+
+
+class PasswordResetRequest(BaseModel):
+    email: EmailStr
+
+
+class PasswordChangeRequest(BaseModel):
+    current_password: str
+    new_password: str
+
+
+@router.post("/forgot-password")
+async def forgot_password(req: PasswordResetRequest):
+    db = get_db()
+    user = await db.users.find_one({"email": req.email})
+    if not user:
+        # Return success even if user not found (security best practice)
+        return {"message": "If this email exists, a reset link has been sent to your administrator."}
+    return {"message": "Password reset request received. Contact your Cyber Cell administrator with your employee ID."}
+
+
+@router.post("/change-password")
+async def change_password(req: PasswordChangeRequest, current_user: dict = Depends(get_current_user)):
+    if not verify_password(req.current_password, current_user["hashed_password"]):
+        raise HTTPException(status_code=400, detail="Current password is incorrect")
+    if len(req.new_password) < 6:
+        raise HTTPException(status_code=400, detail="New password must be at least 6 characters")
+    db = get_db()
+    hashed = get_password_hash(req.new_password)
+    await db.users.update_one({"_id": current_user["_id"]}, {"$set": {"hashed_password": hashed}})
+    return {"message": "Password changed successfully"}

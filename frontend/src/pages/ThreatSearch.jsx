@@ -12,6 +12,7 @@ import ThreatBadge from '../components/ui/ThreatBadge'
 import api from '../api/client'
 import { detectInputType, TYPE_LABELS, TYPE_ICONS } from '../utils/inputDetector'
 import { getThreatColor } from '../utils/riskScorer'
+import { useThreatStore } from '../store/threatStore'
 import toast from 'react-hot-toast'
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts'
 
@@ -89,8 +90,8 @@ function BreachCard({ breach }) {
 export default function ThreatSearch() {
   const [query, setQuery] = useState('')
   const [loading, setLoading] = useState(false)
-  const [result, setResult] = useState(null)
   const [detectedType, setDetectedType] = useState(null)
+  const { currentResult: result, setCurrentResult, addResult, setLoading: setStoreLoading } = useThreatStore()
 
   const handleInput = (val) => {
     setQuery(val)
@@ -101,10 +102,10 @@ export default function ThreatSearch() {
     e?.preventDefault()
     if (!query.trim()) return
     setLoading(true)
-    setResult(null)
+    setCurrentResult(null)
     try {
       const { data } = await api.post('/threat/analyze', { query: query.trim() })
-      setResult(data)
+      addResult(data)
       toast.success(`Analysis complete — ${data.ai_analysis?.threat_level || 'UNKNOWN'}`)
     } catch (err) {
       toast.error(err.response?.data?.detail || 'Analysis failed. Check backend connection.')
