@@ -4,6 +4,7 @@ import { Bell, CheckCheck, Trash2, AlertTriangle, Info, CheckCircle, XCircle } f
 import GlowCard from '../components/ui/GlowCard'
 import api from '../api/client'
 import { formatDate } from '../utils/riskScorer'
+import { useAlertStore } from '../store/alertStore'
 import toast from 'react-hot-toast'
 
 const ALERT_ICONS = {
@@ -23,7 +24,7 @@ const ALERT_STYLES = {
 }
 
 export default function Alerts() {
-  const [alerts, setAlerts] = useState([])
+  const { alerts, setAlerts, markRead: storeMarkRead, markAllRead: storeMarkAllRead, removeAlert } = useAlertStore()
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState('all')
 
@@ -39,21 +40,19 @@ export default function Alerts() {
   }, [])
 
   const markRead = async (id) => {
-    try {
-      await api.post(`/alerts/${id}/read`)
-      setAlerts(p => p.map(a => a.id === id ? { ...a, is_read: true } : a))
-    } catch { setAlerts(p => p.map(a => a.id === id ? { ...a, is_read: true } : a)) }
+    try { await api.post(`/alerts/${id}/read`) } catch {}
+    storeMarkRead(id)
   }
 
   const markAllRead = async () => {
     try { await api.post('/alerts/read-all') } catch {}
-    setAlerts(p => p.map(a => ({ ...a, is_read: true })))
+    storeMarkAllRead()
     toast.success('All alerts marked as read')
   }
 
   const deleteAlert = async (id) => {
     try { await api.delete(`/alerts/${id}`) } catch {}
-    setAlerts(p => p.filter(a => a.id !== id))
+    removeAlert(id)
     toast.success('Alert deleted')
   }
 

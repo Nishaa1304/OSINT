@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Settings as SettingsIcon, User, Key, Bell, Palette, Save, Eye, EyeOff, Shield } from 'lucide-react'
+import { Settings as SettingsIcon, User, Key, Bell, Palette, Save, Eye, EyeOff, Shield, Lock } from 'lucide-react'
 import GlowCard from '../components/ui/GlowCard'
 import { useAuthStore } from '../store/authStore'
+import api from '../api/client'
 import toast from 'react-hot-toast'
 
 const TABS = [
@@ -53,10 +54,28 @@ export default function Settings() {
   const [tab, setTab] = useState('profile')
   const [profile, setProfile] = useState({ username: user?.username || '', full_name: user?.full_name || '', email: user?.email || '' })
   const [notifs, setNotifs] = useState({ critical: true, high: true, medium: false, email_alerts: false })
+  const [pwForm, setPwForm] = useState({ current_password: '', new_password: '', confirm: '' })
+  const [pwLoading, setPwLoading] = useState(false)
 
   const saveProfile = () => {
     updateUser({ username: profile.username, full_name: profile.full_name })
     toast.success('Profile updated!')
+  }
+
+  const changePassword = async (e) => {
+    e.preventDefault()
+    if (pwForm.new_password !== pwForm.confirm) { toast.error('Passwords do not match'); return }
+    if (pwForm.new_password.length < 6) { toast.error('Password must be at least 6 characters'); return }
+    setPwLoading(true)
+    try {
+      await api.post('/auth/change-password', { current_password: pwForm.current_password, new_password: pwForm.new_password })
+      toast.success('Password changed successfully!')
+      setPwForm({ current_password: '', new_password: '', confirm: '' })
+    } catch (err) {
+      toast.error(err.response?.data?.detail || 'Failed to change password')
+    } finally {
+      setPwLoading(false)
+    }
   }
 
   return (
@@ -108,6 +127,35 @@ export default function Settings() {
             <button onClick={saveProfile} className="cyber-btn flex items-center gap-2 text-sm">
               <Save size={14}/> Save Profile
             </button>
+          </Section>
+
+          <Section title="🔒 Change Password">
+            <form onSubmit={changePassword} className="space-y-3">
+              <Field label="Current Password">
+                <div className="relative">
+                  <Lock size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-cyber-muted"/>
+                  <input type="password" value={pwForm.current_password} onChange={e => setPwForm(p => ({ ...p, current_password: e.target.value }))}
+                    placeholder="Current password" className="cyber-input pl-8"/>
+                </div>
+              </Field>
+              <Field label="New Password">
+                <div className="relative">
+                  <Lock size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-cyber-muted"/>
+                  <input type="password" value={pwForm.new_password} onChange={e => setPwForm(p => ({ ...p, new_password: e.target.value }))}
+                    placeholder="Min 6 characters" className="cyber-input pl-8"/>
+                </div>
+              </Field>
+              <Field label="Confirm New Password">
+                <div className="relative">
+                  <Lock size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-cyber-muted"/>
+                  <input type="password" value={pwForm.confirm} onChange={e => setPwForm(p => ({ ...p, confirm: e.target.value }))}
+                    placeholder="Repeat new password" className="cyber-input pl-8"/>
+                </div>
+              </Field>
+              <button type="submit" disabled={pwLoading} className="cyber-btn flex items-center gap-2 text-sm">
+                {pwLoading ? 'Saving...' : <><Lock size={14}/> Change Password</>}
+              </button>
+            </form>
           </Section>
         </motion.div>
       )}

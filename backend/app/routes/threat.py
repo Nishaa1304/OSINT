@@ -63,7 +63,7 @@ async def analyze(req: SearchRequest, current_user: dict = Depends(get_current_u
     elif qtype == "domain":
         return await analyze_domain_handler(query, user_id, db)
     else:
-        raise HTTPException(status_code=400, detail=f"Could not determine query type for: {query}")
+        raise HTTPException(status_code=400, detail=f"Invalid input. Enter a single IP (e.g. 8.8.8.8), URL (e.g. http://example.com), email, or domain — not multiple values at once.")
 
 
 async def analyze_url_handler(url: str, user_id: str, db):
