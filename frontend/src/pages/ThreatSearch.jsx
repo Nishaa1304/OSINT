@@ -3,6 +3,9 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Search, Globe, Mail, Shield, Loader2, AlertTriangle, CheckCircle, Info, ExternalLink, MapPin, Building, Clock } from 'lucide-react'
 import { MapContainer, TileLayer, Marker, Popup, Circle } from 'react-leaflet'
 import L from 'leaflet'
+import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png'
+import markerIcon from 'leaflet/dist/images/marker-icon.png'
+import markerShadow from 'leaflet/dist/images/marker-shadow.png'
 import ThreatMeter from '../components/ui/ThreatMeter'
 import GlowCard from '../components/ui/GlowCard'
 import ThreatBadge from '../components/ui/ThreatBadge'
@@ -13,7 +16,7 @@ import toast from 'react-hot-toast'
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts'
 
 delete L.Icon.Default.prototype._getIconUrl
-L.Icon.Default.mergeOptions({ iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png', iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png', shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png' })
+L.Icon.Default.mergeOptions({ iconRetinaUrl: markerIcon2x, iconUrl: markerIcon, shadowUrl: markerShadow })
 
 const BREACH_COLORS = ['#ff3366','#ff6b35','#ffd60a','#00d4ff','#7c3aed','#00ff88']
 const TT = { contentStyle:{ background:'#0d1526', border:'1px solid rgba(0,212,255,0.3)', borderRadius:'8px', color:'#e2e8f0', fontSize:'12px' } }

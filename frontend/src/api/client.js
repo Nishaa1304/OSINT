@@ -18,11 +18,12 @@ api.interceptors.request.use((config) => {
   return config
 })
 
-// Handle 401 — auto logout
+// Handle 401 — auto logout (skip if using mock token or backend is offline)
 api.interceptors.response.use(
   (res) => res,
   (err) => {
-    if (err.response?.status === 401) {
+    const { token } = useAuthStore.getState()
+    if (err.response?.status === 401 && token && token !== 'mock-token') {
       useAuthStore.getState().logout()
       window.location.href = '/login'
     }
