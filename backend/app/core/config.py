@@ -19,6 +19,8 @@ class Settings(BaseSettings):
     IPINFO_TOKEN: Optional[str] = None
     PHISHTANK_APP_KEY: Optional[str] = None
     HIBP_API_KEY: Optional[str] = None
+    GROQ_API_KEY: Optional[str] = None
+    GROQ_MODEL: str = "llama-3.1-8b-instant"
 
     # App
     APP_ENV: str = "development"
