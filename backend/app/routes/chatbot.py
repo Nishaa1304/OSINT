@@ -1,7 +1,7 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter
 from pydantic import BaseModel
-from app.routes.auth import get_current_user
 import re
+from app.services.groq_chat import get_chat_response
 
 router = APIRouter(prefix="/chatbot", tags=["AI Chatbot"])
 
@@ -103,8 +103,10 @@ def find_answer(user_message: str) -> str:
 
 
 @router.post("/message")
-async def chat(msg: ChatMessage, current_user: dict = Depends(get_current_user)):
-    answer = find_answer(msg.message)
+async def chat(msg: ChatMessage):
+    answer = await get_chat_response(msg.message)
+    if not answer:
+        answer = find_answer(msg.message)
     return {
         "user_message": msg.message,
         "assistant_response": answer,
