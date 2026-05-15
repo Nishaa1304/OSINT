@@ -5,7 +5,7 @@ from typing import Dict, Any, List, Tuple
 # Suspicious keyword lists
 PHISHING_KEYWORDS = [
     "login", "signin", "verify", "secure", "account", "update", "confirm",
-    "banking", "paypal", "amazon", "apple", "microsoft", "google", "netflix",
+    "banking", "paypal", "amazon", "apple", "microsoft", "netflix",
     "password", "credential", "wallet", "crypto", "urgent", "suspended",
     "limited", "blocked", "unusual", "alert", "security", "validate"
 ]

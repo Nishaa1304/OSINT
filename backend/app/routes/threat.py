@@ -86,6 +86,13 @@ async def analyze_url_handler(url: str, user_id: str, db):
         ai["risk_score"] = min(ai["risk_score"] + 25, 100)
         ai["indicators"].append("Listed in PhishTank database")
 
+    # Recalculate threat_level and summary after all boosts
+    from app.services.ai_analyzer import _score_to_level, _generate_url_summary, _url_recommendations
+    ai["threat_level"] = _score_to_level(ai["risk_score"])
+    ai["summary"] = _generate_url_summary(ai["risk_score"], ai["threat_level"], ai["indicators"])
+    ai["recommendations"] = _url_recommendations(ai["risk_score"])
+    ai["phishing_probability"] = round(min(ai["risk_score"] / 100, 1.0), 2)
+
     result = {
         "query": url,
         "query_type": "url",
