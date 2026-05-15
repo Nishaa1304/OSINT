@@ -40,7 +40,7 @@ export default function App() {
         <Route path="assistant"  element={<AIAssistant />} />
         <Route path="settings"   element={<Settings />} />
       </Route>
-      <Route path="*" element={<Navigate to="/dashboard" replace />} />
+      <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   )
 }
